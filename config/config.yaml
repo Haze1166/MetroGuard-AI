@@ -1,0 +1,135 @@
+# MetroGuard AI - Master Configuration
+# All parameters and reproducibility settings are centralized here.
+
+project:
+  name: "MetroGuard AI"
+  version: "1.0.0"
+  random_seed: 42
+
+paths:
+  raw_data: "data/raw/MetroPT3(AirCompressor).csv"
+  processed_dir: "data/processed"
+  sample_dir: "data/sample"
+  models_dir: "models"
+  figures_dir: "reports/figures"
+  metrics_dir: "reports/metrics"
+
+sensors:
+  timestamp_col: "timestamp"
+  analog:
+    - "TP2"              # Pressure at compressor outlet (bar)
+    - "TP3"              # Pneumatic panel pressure (bar)
+    - "H1"               # Pressure after air dryer (bar)
+    - "DV_pressure"      # Pressure drop across air dryer valve (bar)
+    - "Reservoirs"       # Air reservoir pressure (bar)
+    - "Oil_temperature"  # Compressor oil temperature (°C)
+    - "Motor_current"    # Electrical current drawn by compressor motor (A)
+  digital:
+    - "COMP"             # Compressor operating command
+    - "DV_eletric"       # Electrical command to drain valve
+    - "Towers"           # Active desiccant tower state
+    - "MPG"              # Motor-compressor pressure switch / governor
+    - "LPS"              # Low pressure switch
+    - "Pressure_switch"  # Pressure switch state
+    - "Oil_level"        # Oil level indicator
+    - "Caudal_impulses"  # Air flow pulse signal
+
+sampling:
+  raw_interval_seconds: 10
+  window_size_minutes: 5
+  step_size_minutes: 1
+  min_samples_per_window: 25  # ~5 minutes @ 10s = 30 samples, allow slight gap tolerance
+
+labeling:
+  target_col: "y_early_warning_2h"
+  horizon_hours: 2.0
+  # Handling of periods during active failure:
+  # "exclude": exclude ongoing failure windows from evaluation to test pure early warning
+  ongoing_failure_handling: "exclude"
+  post_failure_maintenance_hours: 6.0  # Buffer window post-failure for maintenance recovery
+
+# Official failure events documented in MetroPT-3 literature (Veloso et al., 2022)
+# Air leakages and compressor faults documented on PM179Tc / MetroPT-3:
+# Event 1: Air leakage failure (May 2020)
+# Event 2: Air leakage failure (July 2020)
+# Event 3: Low pressure / compressor fault (July 2020)
+# Event 4: Air leakage failure (September 2020)
+failure_events:
+  - id: 1
+    type: "Air leakage"
+    start: "2020-04-18 00:00:00"
+    end: "2020-04-18 23:59:59"
+    source: "UCI MetroPT-3 Dataset & Veloso et al. (2022)"
+  - id: 2
+    type: "Air leakage"
+    start: "2020-05-29 23:30:00"
+    end: "2020-05-30 06:00:00"
+    source: "UCI MetroPT-3 Dataset & Veloso et al. (2022)"
+  - id: 3
+    type: "Air leakage"
+    start: "2020-06-05 10:00:00"
+    end: "2020-06-07 14:30:00"
+    source: "UCI MetroPT-3 Dataset & Veloso et al. (2022)"
+  - id: 4
+    type: "Air leakage"
+    start: "2020-07-15 14:30:00"
+    end: "2020-07-15 19:00:00"
+    source: "UCI MetroPT-3 Dataset & Veloso et al. (2022)"
+
+split:
+  # Chronological split definitions (Hard Rule 2: Chronological splits only)
+  # Total timeframe: Feb 1, 2020 - Sep 1, 2020
+  # Train: Feb 1, 2020 to May 15, 2020 (contains Event 1)
+  # Validation: May 16, 2020 to June 25, 2020 (contains Events 2 & 3)
+  # Test: June 26, 2020 to Sep 1, 2020 (contains Event 4)
+  train_end: "2020-05-15 23:59:59"
+  val_end: "2020-06-25 23:59:59"
+
+feature_engineering:
+  analog_aggregations:
+    - "mean"
+    - "std"
+    - "min"
+    - "max"
+    - "last"
+    - "diff"  # recent change: last - first in window
+  digital_aggregations:
+    - "mean"  # duty cycle / percentage active
+    - "last"  # state at end of window
+
+models:
+  logistic_regression:
+    class_weight: "balanced"
+    max_iter: 1000
+    C: 1.0
+    solver: "lbfgs"
+  random_forest:
+    n_estimators: 150
+    max_depth: 12
+    min_samples_leaf: 5
+    class_weight: "balanced_subsample"
+    n_jobs: -1
+  xgboost:
+    n_estimators: 150
+    max_depth: 6
+    learning_rate: 0.05
+    subsample: 0.8
+    colsample_bytree: 0.8
+    scale_pos_weight: 10.0
+    eval_metric: "logloss"
+    n_jobs: -1
+  lightgbm:
+    n_estimators: 150
+    max_depth: 6
+    learning_rate: 0.05
+    subsample: 0.8
+    colsample_bytree: 0.8
+    scale_pos_weight: 10.0
+    verbose: -1
+    n_jobs: -1
+
+evaluation:
+  default_threshold: 0.5
+  episode_merge_tolerance_minutes: 30
+  hit_lead_time_min_minutes: 5
+  hit_lead_time_max_minutes: 120

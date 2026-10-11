@@ -1,0 +1,17 @@
+# MetroGuard AI - Pinned Dependencies
+# Python 3.10.6
+
+pandas==2.3.2
+numpy==2.2.6
+scipy==1.15.3
+scikit-learn==1.7.2
+xgboost==3.2.0
+lightgbm==4.7.0
+joblib==1.6.0
+shap==0.49.1
+matplotlib==3.10.7
+seaborn==0.13.2
+PyYAML==6.0.2
+streamlit==1.49.1
+pytest==8.4.2
+tqdm==4.67.1

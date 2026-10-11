@@ -1,0 +1,12 @@
+{
+  "Raw Instantaneous Sensors (15 Features)": {
+    "feature_count": 15,
+    "val_pr_auc": 0.00642,
+    "test_pr_auc": 0.00378
+  },
+  "Full Rolling Window Engineered (58 Features)": {
+    "feature_count": 58,
+    "val_pr_auc": 0.00518,
+    "test_pr_auc": 0.00155
+  }
+}
