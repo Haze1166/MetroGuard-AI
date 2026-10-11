@@ -22,37 +22,59 @@
     urlcolor=blue
 }
 
+% Resilient figure inclusion: displays image if present, or clean placeholder box if missing
+\newcommand{\safeinclude}[2][width=\columnwidth]{%
+  \IfFileExists{#2}{%
+    \includegraphics[#1]{#2}%
+  }{%
+    \fbox{%
+      \begin{minipage}[c][3.2cm][c]{\dimexpr\columnwidth-2\fboxsep-2\fboxrule\relax}%
+        \centering%
+        \textbf{[Figure: #2]}\\[0.15cm]%
+        \footnotesize Upload \texttt{#2} to project directory to display.%
+      \end{minipage}%
+    }%
+  }%
+}
+
 \begin{document}
 
-% --- INSTITUTIONAL HEADER & LOGO ---
-\twocolumn[
+% --- INSTITUTIONAL HEADER & TITLE BLOCK ---
+\twocolumn[{
   \begin{center}
     % SPACE FOR COLLEGE LOGO (clg_logo.png)
-    \includegraphics[width=2.4cm]{clg_logo.png} \\[0.3cm]
-    {\LARGE \textbf{Ramdeobaba University, Nagpur}} \\[0.15cm]
-    {\large \textbf{Department of Computer Science and Engineering}} \\[0.2cm]
-    {\normalsize \textbf{Machine Learning Mini Project Report --- October 2026}} \\[0.4cm]
+    \IfFileExists{clg_logo.png}{%
+      \includegraphics[width=2.4cm]{clg_logo.png}%
+    }{%
+      \fbox{\parbox[c][1.8cm][c]{2.4cm}{\centering\footnotesize\textbf{College Logo}\\\tiny clg\_logo.png}}%
+    }
+    \par\vspace{0.3cm}
+    {\LARGE \textbf{Ramdeobaba University, Nagpur}}\par\vspace{0.15cm}
+    {\large \textbf{Department of Computer Science and Engineering}}\par\vspace{0.2cm}
+    {\normalsize \textbf{Machine Learning Mini Project Report --- October 2026}}\par\vspace{0.4cm}
     
-    {\Large \textbf{MetroGuard AI: An Explainable, Time-Aware Predictive Maintenance System for Metro Train Air Compressors}} \\[0.4cm]
+    {\Large \textbf{MetroGuard AI: An Explainable, Time-Aware Predictive Maintenance System for Metro Train Air Compressors}}\par\vspace{0.4cm}
     
-    \textbf{Submitted by:} \\[0.15cm]
+    {\textbf{Submitted by:}}\par\vspace{0.15cm}
     \begin{tabular}{ccc}
       \textbf{Adityaraj Jaiswal} & \textbf{Samprat Deshmukh} & \textbf{Sandesh Kinhikar} \\
       Roll No: A5\_B4\_59 & Roll No: A5\_B4\_58 & Roll No: A5\_B3\_35 \\
     \end{tabular}
-    \vspace{0.4cm}
+    \par\vspace{0.4cm}
     \hrule
-    \vspace{0.4cm}
+    \par\vspace{0.35cm}
+    
+    \begin{minipage}{0.92\textwidth}
+      \small
+      \textbf{Abstract}---Pneumatic braking and secondary suspension failures in modern rapid-transit metro networks frequently stem from unpredicted faults in the Air Production Unit (APU). Traditional diagnostic frameworks focus primarily on retrospective fault detection, identifying failures only after operational disruptions have commenced. This study develops \textbf{MetroGuard AI}, an industrial-grade, prognostic predictive maintenance system that anticipates reported compressor air leak failures within a 2-hour advance lookahead horizon ($y_t = 1 \iff \tau_{\text{fail}} \in (t, t+2\text{h}]$) using strictly historical sensor telematics. Utilizing 1,516,948 high-frequency telematics records from the benchmark MetroPT-3 dataset (Knorr-Bremse VV120-T compressor on Metro do Porto train unit PM179Tc), we implement a leak-free engineering pipeline comprising 58 causal rolling window features, strict chronological partitioning across verified failure events, and an operational warning-episode clustering protocol. We compare four state-of-the-art architectures: Regularized Logistic Regression, Random Forest, XGBoost, and LightGBM. On an untouched chronological test partition, we reveal the \textit{Accuracy Paradox} in industrial telematics: XGBoost achieves 98.36\% accuracy while failing to detect rare test-set failure windows ($TP = 0$), whereas validation-tuned models achieve sub-2\,$\mu$s inference latency suitable for edge deployment. Tree-based SHAP explainability identifies compressor motor current, crankcase oil temperature, and discharge pressure fluctuations as primary failure determinants. A systematic ablation study demonstrates that low-dimensional instantaneous physical features generalize more reliably than high-dimensional rolling features under extreme event scarcity ($n=4$). The end-to-end framework is deployed via an interactive, 5-page Streamlit industrial operations center.
+      \par\vspace{0.25cm}
+      \textbf{\textit{Keywords}}---Predictive Maintenance, Air Production Unit, MetroPT-3, Time-Series Telematics, Early Warning Systems, Class Imbalance, SHAP Explainability.
+    \end{minipage}
+    \par\vspace{0.35cm}
+    \hrule
+    \par\vspace{0.5cm}
   \end{center}
-]
-
-\begin{abstract}
-Pneumatic braking and secondary suspension failures in modern rapid-transit metro networks frequently stem from unpredicted faults in the Air Production Unit (APU). Traditional diagnostic frameworks focus primarily on retrospective fault detection, identifying failures only after operational disruptions have commenced. This study develops \textbf{MetroGuard AI}, an industrial-grade, prognostic predictive maintenance system that anticipates reported compressor air leak failures within a 2-hour advance lookahead horizon ($y_t = 1 \iff \tau_{\text{fail}} \in (t, t+2\text{h}]$) using strictly historical sensor telematics. Utilizing 1,516,948 high-frequency telematics records from the benchmark MetroPT-3 dataset (Knorr-Bremse VV120-T compressor on Metro do Porto train unit PM179Tc), we implement a leak-free engineering pipeline comprising 58 causal rolling window features, strict chronological partitioning across verified failure events, and an operational warning-episode clustering protocol. We compare four state-of-the-art architectures: Regularized Logistic Regression, Random Forest, XGBoost, and LightGBM. On an untouched chronological test partition, we reveal the \textit{Accuracy Paradox} in industrial telematics: XGBoost achieves 98.36\% accuracy while failing to detect rare test-set failure windows ($TP = 0$), whereas validation-tuned models achieve sub-2\,$\mu$s inference latency suitable for edge deployment. Tree-based SHAP explainability identifies compressor motor current, crankcase oil temperature, and discharge pressure fluctuations as primary failure determinants. A systematic ablation study demonstrates that low-dimensional instantaneous physical features generalize more reliably than high-dimensional rolling features under extreme event scarcity ($n=4$). The end-to-end framework is deployed via an interactive, 5-page Streamlit industrial operations center.
-\end{abstract}
-
-\textbf{\textit{Keywords}}---Predictive Maintenance, Air Production Unit, MetroPT-3, Time-Series Telematics, Early Warning Systems, Class Imbalance, SHAP Explainability.
-
----
+}]
 
 \section{Introduction}
 Rapid-transit metro networks operate under stringent headway constraints, demanding near-zero equipment downtime. Among the mission-critical subsystems governing train operation, the Air Production Unit (APU) is arguably the most vital. The APU supplies pressurized air for pneumatic friction braking, air suspension leveling, automatic door actuation, and pantograph elevation. A sudden loss of pneumatic pressure in service forces immediate emergency brake engagement, stranding trainsets on active tracks, stalling network operations, and posing significant passenger safety hazards.
@@ -61,7 +83,7 @@ At the core of the APU is the motor-compressor set---in this study, a Knorr-Brem
 
 In contrast, \textit{predictive maintenance} (prognostics) aims to issue an advance warning before functional degradation incapacitates the train. However, developing machine learning prognostics for railway compressors presents severe data-science challenges:
 \begin{enumerate}
-    \item \textbf{Extreme Class Imbalance and Event Scarcity}: Industrial machines rarely fail under preventative maintenance schedules. Over seven months of continuous operations, only four air leakage failure events were logged, yielding an active positive class prevalence of just 0.196\% (~1 in 511 five-minute windows).
+    \item \textbf{Extreme Class Imbalance and Event Scarcity}: Industrial machines rarely fail under preventative maintenance schedules. Over seven months of continuous operations, only four air leakage failure events were logged, yielding an active positive class prevalence of just 0.196\% ($\sim$1 in 511 five-minute windows).
     \item \textbf{Risk of Temporal Data Leakage}: Standard $k$-fold cross-validation or random train-test splitting introduces catastrophic future data leakage across overlapping time-series rolling windows, generating falsely optimistic accuracy figures that collapse upon deployment.
     \item \textbf{Operational Usability vs. False Alarms}: Pointwise 1-minute classification metrics penalize models unfairly while failing to measure practical dispatch utility, which relies on contiguous \textit{warning episodes}, lead time, and false alarm frequencies per operational day.
 \end{enumerate}
@@ -75,8 +97,6 @@ To address these challenges, we design \textbf{MetroGuard AI}. The core contribu
     \item A differentiator ablation study (instantaneous sensors vs. rolling features) and SHAP explainability analysis.
     \item An interactive 5-page Streamlit industrial operations center dashboard for real-time risk estimation and historical failure replay.
 \end{itemize}
-
----
 
 \section{Literature Review}
 Predictive maintenance for railway rolling stock has evolved rapidly from classical physics-based fatigue models to deep learning and gradient boosted trees. To contextualize our research, Table~\ref{tab:literature} synthesizes five foundational and recent peer-reviewed studies.
@@ -108,8 +128,6 @@ While Davari et al.~\cite{davari2021predictive} established the validity of reco
 
 Our study closes this gap by establishing an uncompromising, leak-free chronological evaluation protocol that combines causal rolling feature engineering, validation-locked threshold optimization, and SHAP explainability.
 
----
-
 \section{Methodology}
 
 \subsection{Predictive Maintenance Problem Formulation}
@@ -135,7 +153,7 @@ A common error in prognostic literature is treating data recorded \textit{during
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\columnwidth]{class_balance.png}
+\safeinclude[width=\columnwidth]{class_balance.png}
 \caption{Target class balance after applying failure and maintenance masks ($y=1$: 480 windows, $y=0$: 244,954 windows).}
 \label{fig:class_balance}
 \end{figure}
@@ -166,8 +184,6 @@ Because evaluating predictions at 1-minute resolutions produces noisy warning bu
     \item The false alarm frequency is reported as $\text{FA/day} = \frac{\text{False Alarm Episodes}}{\text{Total Operational Days in Test}}$.
 \end{enumerate}
 
----
-
 \section{Data Cleaning and Preprocessing}
 
 \subsection{Dataset Provenance and Integrity Verification}
@@ -183,14 +199,14 @@ Validation confirmed:
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\columnwidth]{sensor_trends_with_failures.png}
+\safeinclude[width=\columnwidth]{sensor_trends_with_failures.png}
 \caption{Full 7-month APU sensor telematics with official failure intervals shaded in red.}
 \label{fig:sensor_trends}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.85\columnwidth]{correlation_heatmap.png}
+\safeinclude[width=0.85\columnwidth]{correlation_heatmap.png}
 \caption{Pearson correlation matrix across analogue sensor channels.}
 \label{fig:correlation}
 \end{figure}
@@ -200,15 +216,13 @@ Per Hard Rule 5, no outlier filtering or truncation was performed. Analogue pres
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\columnwidth]{sensor_distributions.png}
+\safeinclude[width=\columnwidth]{sensor_distributions.png}
 \caption{Standardized Z-score distributions across analogue sensor channels validating preservation of physical operational extremes.}
 \label{fig:distributions}
 \end{figure}
 
 \subsection{Preprocessing Pipeline}
 All feature imputation and scaling operations were encapsulated in a scikit-learn \texttt{Pipeline} consisting of median imputation and \texttt{StandardScaler}. The pipeline was fitted strictly on $\mathbf{X}_{\text{train}}$ and persisted via \texttt{joblib} to prevent test-set distribution leakage.
-
----
 
 \section{Results and Discussion}
 
@@ -242,21 +256,21 @@ LightGBM & 0.0000 & 0.0016 & 1.0000 & 0.0031 & 0.0016 & 0.16\% & 65 & 0.968 & 1.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\columnwidth]{pr_curves_all_models.png}
+\safeinclude[width=\columnwidth]{pr_curves_all_models.png}
 \caption{Precision-Recall curves on the locked test partition compared against the no-skill prevalence baseline (0.0016).}
 \label{fig:pr_curves}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\columnwidth]{confusion_matrices.png}
+\safeinclude[width=\columnwidth]{confusion_matrices.png}
 \caption{Confusion matrices on locked test data using validation-tuned decision thresholds.}
 \label{fig:confusion_matrices}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\columnwidth]{failure_timeline_test.png}
+\safeinclude[width=\columnwidth]{failure_timeline_test.png}
 \caption{Failure timeline around Test Event \#4 (July 15, 2020) showing actual warning window vs. model alarms.}
 \label{fig:timeline}
 \end{figure}
@@ -271,7 +285,7 @@ To explain model decisions to maintenance engineers, we conducted SHAP (SHapley 
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\columnwidth]{shap_summary.png}
+\safeinclude[width=\columnwidth]{shap_summary.png}
 \caption{Global feature importance: Top 15 predictors driving early warning failure risk identified by Tree SHAP.}
 \label{fig:shap}
 \end{figure}
@@ -303,14 +317,12 @@ Full Rolling Window Features & 58 & 0.00518 & 0.00155 \\
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.85\columnwidth]{ablation_study.png}
+\safeinclude[width=0.85\columnwidth]{ablation_study.png}
 \caption{Ablation comparison of Validation and Test PR-AUC.}
 \label{fig:ablation}
 \end{figure}
 
 As shown in Table~\ref{tab:ablation} and Figure~\ref{fig:ablation}, the 15 raw instantaneous features achieved higher PR-AUC on both validation and test sets than the 58 engineered rolling features. In extreme small-sample failure regimes ($n=4$), expanding the feature space introduces multi-collinearity ($p > n_{\text{failures}}$), causing tree-based models to overfit specific pressure jitter present during training Event \#1.
-
----
 
 \section{User Interface Development and Deployment}
 
@@ -327,8 +339,6 @@ To translate machine learning estimates into operational transit workflows, we b
 \subsection{Edge Deployment Suitability}
 All four models exhibited inference latencies between $0.32\,\mu\text{s}$ and $1.99\,\mu\text{s}$ per sample. This sub-microsecond latency confirms that the model pipeline can readily execute on low-power onboard train control microcontrollers (TCMS) without requiring cloud offloading.
 
----
-
 \section{Threats to Validity and Limitations}
 In accordance with academic rigor, three primary limitations are disclosed:
 \begin{enumerate}
@@ -337,12 +347,8 @@ In accordance with academic rigor, three primary limitations are disclosed:
     \item \textbf{Alarm Fatigue}: False alarm rates of $0.55$--$0.97\,\text{episodes/day}$ necessitate multi-stage operational confirmation rules prior to dispatch intervention.
 \end{enumerate}
 
----
-
 \section{Conclusion}
 This study presented \textbf{MetroGuard AI}, an explainable, time-aware predictive maintenance system for metro train air compressors. By establishing an early-warning horizon of 2 hours, implementing strictly causal rolling features, and adhering to locked chronological splitting, we eliminated temporal data leakage. Empirical results highlighted the Accuracy Paradox in industrial prognostics, proved that raw physical sensor levels generalize better than high-dimensional rolling features under event scarcity, and demonstrated sub-microsecond edge inference capabilities within an interactive Streamlit operations dashboard.
-
----
 
 \begin{thebibliography}{00}
 
