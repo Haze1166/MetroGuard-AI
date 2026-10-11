@@ -22,19 +22,29 @@
     urlcolor=blue
 }
 
-\title{\textbf{MetroGuard AI: An Explainable, Time-Aware Predictive Maintenance System for Metro Train Air Compressors}}
-
-\author{
-    \textbf{Student 1 (Data Lead)}, \textbf{Student 2 (ML Lead)}, \textbf{Student 3 (Product Lead)} \\
-    Department of Computer Science and Engineering \\
-    Machine Learning Mini Project --- October 2026
-}
-
-\date{}
-
 \begin{document}
 
-\maketitle
+% --- INSTITUTIONAL HEADER & LOGO ---
+\twocolumn[
+  \begin{center}
+    % SPACE FOR COLLEGE LOGO (clg_logo.png)
+    \includegraphics[width=2.4cm]{clg_logo.png} \\[0.3cm]
+    {\LARGE \textbf{Ramdeobaba University, Nagpur}} \\[0.15cm]
+    {\large \textbf{Department of Computer Science and Engineering}} \\[0.2cm]
+    {\normalsize \textbf{Machine Learning Mini Project Report --- October 2026}} \\[0.4cm]
+    
+    {\Large \textbf{MetroGuard AI: An Explainable, Time-Aware Predictive Maintenance System for Metro Train Air Compressors}} \\[0.4cm]
+    
+    \textbf{Submitted by:} \\[0.15cm]
+    \begin{tabular}{ccc}
+      \textbf{Adityaraj Jaiswal} & \textbf{Samprat Deshmukh} & \textbf{Sandesh Kinhikar} \\
+      Roll No: A5\_B4\_59 & Roll No: A5\_B4\_58 & Roll No: A5\_B3\_35 \\
+    \end{tabular}
+    \vspace{0.4cm}
+    \hrule
+    \vspace{0.4cm}
+  \end{center}
+]
 
 \begin{abstract}
 Pneumatic braking and secondary suspension failures in modern rapid-transit metro networks frequently stem from unpredicted faults in the Air Production Unit (APU). Traditional diagnostic frameworks focus primarily on retrospective fault detection, identifying failures only after operational disruptions have commenced. This study develops \textbf{MetroGuard AI}, an industrial-grade, prognostic predictive maintenance system that anticipates reported compressor air leak failures within a 2-hour advance lookahead horizon ($y_t = 1 \iff \tau_{\text{fail}} \in (t, t+2\text{h}]$) using strictly historical sensor telematics. Utilizing 1,516,948 high-frequency telematics records from the benchmark MetroPT-3 dataset (Knorr-Bremse VV120-T compressor on Metro do Porto train unit PM179Tc), we implement a leak-free engineering pipeline comprising 58 causal rolling window features, strict chronological partitioning across verified failure events, and an operational warning-episode clustering protocol. We compare four state-of-the-art architectures: Regularized Logistic Regression, Random Forest, XGBoost, and LightGBM. On an untouched chronological test partition, we reveal the \textit{Accuracy Paradox} in industrial telematics: XGBoost achieves 98.36\% accuracy while failing to detect rare test-set failure windows ($TP = 0$), whereas validation-tuned models achieve sub-2\,$\mu$s inference latency suitable for edge deployment. Tree-based SHAP explainability identifies compressor motor current, crankcase oil temperature, and discharge pressure fluctuations as primary failure determinants. A systematic ablation study demonstrates that low-dimensional instantaneous physical features generalize more reliably than high-dimensional rolling features under extreme event scarcity ($n=4$). The end-to-end framework is deployed via an interactive, 5-page Streamlit industrial operations center.
@@ -125,7 +135,7 @@ A common error in prognostic literature is treating data recorded \textit{during
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\columnwidth]{reports/figures/class_balance.png}
+\includegraphics[width=\columnwidth]{class_balance.png}
 \caption{Target class balance after applying failure and maintenance masks ($y=1$: 480 windows, $y=0$: 244,954 windows).}
 \label{fig:class_balance}
 \end{figure}
@@ -173,20 +183,27 @@ Validation confirmed:
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\columnwidth]{reports/figures/sensor_trends_with_failures.png}
+\includegraphics[width=\columnwidth]{sensor_trends_with_failures.png}
 \caption{Full 7-month APU sensor telematics with official failure intervals shaded in red.}
 \label{fig:sensor_trends}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.85\columnwidth]{reports/figures/correlation_heatmap.png}
+\includegraphics[width=0.85\columnwidth]{correlation_heatmap.png}
 \caption{Pearson correlation matrix across analogue sensor channels.}
 \label{fig:correlation}
 \end{figure}
 
 \subsection{Preservation of Physical Outliers}
 Per Hard Rule 5, no outlier filtering or truncation was performed. Analogue pressure sensors exhibited minor negative readings down to $-0.036\,\text{bar}$ in \texttt{TP2} and \texttt{H1}. In industrial piezoresistive gauge transmitters open to atmospheric pressure, these represent standard zero-point calibration drift rather than data corruption. Truncating extreme motor currents ($9.3\,\text{A}$) or high oil temperatures ($89.0^\circ\text{C}$) would eliminate the physical precursor anomalies that signal incipient compressor degradation.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{sensor_distributions.png}
+\caption{Standardized Z-score distributions across analogue sensor channels validating preservation of physical operational extremes.}
+\label{fig:distributions}
+\end{figure}
 
 \subsection{Preprocessing Pipeline}
 All feature imputation and scaling operations were encapsulated in a scikit-learn \texttt{Pipeline} consisting of median imputation and \texttt{StandardScaler}. The pipeline was fitted strictly on $\mathbf{X}_{\text{train}}$ and persisted via \texttt{joblib} to prevent test-set distribution leakage.
@@ -225,21 +242,21 @@ LightGBM & 0.0000 & 0.0016 & 1.0000 & 0.0031 & 0.0016 & 0.16\% & 65 & 0.968 & 1.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\columnwidth]{reports/figures/pr_curves_all_models.png}
+\includegraphics[width=\columnwidth]{pr_curves_all_models.png}
 \caption{Precision-Recall curves on the locked test partition compared against the no-skill prevalence baseline (0.0016).}
 \label{fig:pr_curves}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\columnwidth]{reports/figures/confusion_matrices.png}
+\includegraphics[width=\columnwidth]{confusion_matrices.png}
 \caption{Confusion matrices on locked test data using validation-tuned decision thresholds.}
 \label{fig:confusion_matrices}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\columnwidth]{reports/figures/failure_timeline_test.png}
+\includegraphics[width=\columnwidth]{failure_timeline_test.png}
 \caption{Failure timeline around Test Event \#4 (July 15, 2020) showing actual warning window vs. model alarms.}
 \label{fig:timeline}
 \end{figure}
@@ -254,7 +271,7 @@ To explain model decisions to maintenance engineers, we conducted SHAP (SHapley 
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\columnwidth]{reports/figures/shap_summary.png}
+\includegraphics[width=\columnwidth]{shap_summary.png}
 \caption{Global feature importance: Top 15 predictors driving early warning failure risk identified by Tree SHAP.}
 \label{fig:shap}
 \end{figure}
@@ -286,7 +303,7 @@ Full Rolling Window Features & 58 & 0.00518 & 0.00155 \\
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.85\columnwidth]{reports/figures/ablation_study.png}
+\includegraphics[width=0.85\columnwidth]{ablation_study.png}
 \caption{Ablation comparison of Validation and Test PR-AUC.}
 \label{fig:ablation}
 \end{figure}
